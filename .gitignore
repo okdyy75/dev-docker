@@ -1,0 +1,7 @@
+.data
+log/mysql/*
+!log/mysql/.gitkeep
+log/nginx/*
+!log/nginx/.gitkeep
+web/*
+!web/.gitkeep
