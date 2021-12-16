@@ -1,52 +1,62 @@
 # dev-docker
 検証用Docker
 
-## Docker基本
-Dockerファイル作成前に手元でコンテナを作成して検証＆デフォルト構成確認
+## 環境
+- php8
+- laravel6
+- nginx1
+- mysql5
 
-### イメージ取得
-```
-docker pull nginx:1.21.4-alpine
-docker pull php:8.1.0-fpm-alpine3.15
-docker pull mysql:5.7.35
-```
+### Nginx
+- foregroundで動くように`daemon off;`を追記
+- LaravelとNginxのドキュメントを参考に修正
 
-### 初回コンテナ立ち上げ
-```
-docker run -d --name nginx -p 80:80 nginx:1.21.4-alpine
-docker run -d --name php-fpm php:8.1.0-fpm-alpine3.15
-docker run -d --name mysql mysql:5.7.35
-```
+#### Laravelのnginx設定
 
-### コンテナ状態確認
 ```
-docker ps -a
+location / {
+    try_files $uri $uri/ /index.php?$query_string;
+}
 ```
 
-### コンテナに入る
+https://readouble.com/laravel/6.x/ja/installation.html#pretty-urls
+
+#### NginxのシンプルなPHPサイトの設定
+
 ```
-docker exec -it nginx sh
-docker exec -it php-fpm sh
-docker exec -it mysql sh
+server {
+    listen      80;
+    server_name example.org www.example.org;
+    root        /data/www;
+
+    location / {
+        index   index.html index.php;
+    }
+
+    location ~* \.(gif|jpg|png)$ {
+        expires 30d;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass  localhost:9000;
+        fastcgi_param SCRIPT_FILENAME
+                      $document_root$fastcgi_script_name;
+        include       fastcgi_params;
+    }
+}
 ```
 
-### コンテナ停止
+https://nginx.org/en/docs/http/request_processing.html#simple_php_site_configuration
+
+### PHP-FPM
+phpコンテナ内に入ってphp拡張モジュールが入っているか確認。足りない場合は追加
 ```
-docker stop nginx
-docker stop php-fpm
-docker stop mysql
+# 確認
+php -m
+# モジュール追加
+docker-php-ext-install bcmath pdo_mysql
 ```
 
-### コンテナ起動
-```
-docker start nginx
-docker start php-fpm
-docker start mysql
-```
-
-### コンテナ削除
-```
-docker rm nginx
-docker rm php-fpm
-docker rm mysql
-```
+### MySQL
+- エラーログを出力するように設定
+- 文字コードをUTF-8に設定する（絵文字の文字化けを回避するためutf8mb4）
