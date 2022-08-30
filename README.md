@@ -8,14 +8,14 @@ Dockerファイル作成前に手元でコンテナを作成して検証＆デ�
 ```
 docker pull nginx:1.21.4-alpine
 docker pull php:8.1.0-fpm-alpine3.15
-docker pull mysql:5.7.35
+docker pull mysql:5.7
 ```
 
 ### 初回コンテナ立ち上げ
 ```
 docker run -d --name nginx -p 80:80 nginx:1.21.4-alpine
 docker run -d --name php-fpm php:8.1.0-fpm-alpine3.15
-docker run -d --name mysql mysql:5.7.35
+docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=root mysql:5.7
 ```
 
 ### コンテナ状態確認
