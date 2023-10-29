@@ -17,7 +17,7 @@ services:
       context: ./docker/db
       dockerfile: Dockerfile
     environment:
-      MYSQL_DATABASE: db
+      MYSQL_DATABASE: cakephp
       MYSQL_ROOT_PASSWORD: root
       TZ: Asia/Tokyo
     expose:
