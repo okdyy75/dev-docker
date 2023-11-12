@@ -6,16 +6,14 @@ Dockerファイル作成前に手元でコンテナを作成して検証＆デ�
 
 ### イメージ取得
 ```
-docker pull nginx:1.21.4-alpine
-docker pull php:8.1.0-fpm-alpine3.15
-docker pull mysql:5.7
+docker pull php:8.2-apache
+docker pull mysql:8.0.33
 ```
 
 ### 初回コンテナ立ち上げ
 ```
-docker run -d --name nginx -p 80:80 nginx:1.21.4-alpine
-docker run -d --name php-fpm php:8.1.0-fpm-alpine3.15
-docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=root mysql:5.7
+docker run --rm --name apache php:8.2-apache
+docker run --rm --name mysql -e MYSQL_ROOT_PASSWORD=root mysql:8.0.33
 ```
 
 ### コンテナ状態確認
@@ -25,28 +23,25 @@ docker ps -a
 
 ### コンテナに入る
 ```
-docker exec -it nginx sh
-docker exec -it php-fpm sh
-docker exec -it mysql sh
+docker exec -it apache bash
+docker exec -it mysql bash
 ```
 
 ### コンテナ停止
 ```
-docker stop nginx
-docker stop php-fpm
+docker stop apache
 docker stop mysql
 ```
 
-### コンテナ起動
-```
-docker start nginx
-docker start php-fpm
-docker start mysql
 ```
 
-### コンテナ削除
-```
-docker rm nginx
-docker rm php-fpm
-docker rm mysql
+
+bin/cake bake migration CreateArticles
+
+bin/cake migrations migrate
+bin/cake migrations rollback
+
+bin/cake bake all Articles -t CakephpFixtureFactories
+
+
 ```
